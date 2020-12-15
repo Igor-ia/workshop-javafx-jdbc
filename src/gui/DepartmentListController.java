@@ -91,7 +91,10 @@ public class DepartmentListController implements Initializable, DataChangeListen
 			
 			DepartmentFormController controller = loader.getController();
 			controller.setDepartment(obj);
+<<<<<<< HEAD
 			controller.subscribeDataChangeListener(this);
+=======
+>>>>>>> b9cad0dabfca006212cedecbee3875df8fa08a62
 			controller.setDepartmentService(new DepartmentService());
 			controller.updateFormData();
 			

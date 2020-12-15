@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DbException;
+<<<<<<< HEAD
 import gui.listeners.DataChangeListener;
+=======
+>>>>>>> b9cad0dabfca006212cedecbee3875df8fa08a62
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -24,9 +27,13 @@ public class DepartmentFormController implements Initializable {
 
 	private Department entity;
 	private DepartmentService service;
+<<<<<<< HEAD
 
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
+=======
+	
+>>>>>>> b9cad0dabfca006212cedecbee3875df8fa08a62
 	@FXML
 	private TextField txtId;
 	@FXML
@@ -44,6 +51,7 @@ public class DepartmentFormController implements Initializable {
 	public void setDepartment(Department entity) {
 		this.entity = entity;
 	}
+<<<<<<< HEAD
 
 	public void setDepartmentService(DepartmentService service) {
 		this.service = service;
@@ -91,6 +99,40 @@ public class DepartmentFormController implements Initializable {
 		return obj;
 	}
 
+=======
+	public void setDepartmentService(DepartmentService service) {
+		this.service = service;
+	}
+	
+	public void onBtSaveAction(ActionEvent event){
+		//Programação defensiva, caso o programador esqueça de injetar as dependecias na classe
+		if (entity == null) {
+			throw new IllegalStateException("Entity was null");
+		}
+		if (service == null) {
+			throw new IllegalStateException("Service was null");
+		}
+		try {
+		entity = getFormData();
+		service.saveOrUpdate(entity);
+		
+		//após concluir irá fechar a janela
+		Utils.currentStage(event).close();
+		
+		}catch (DbException e) {
+			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
+		}
+	}
+	
+	private Department getFormData() {
+		Department obj = new Department();
+		
+		obj.setId(Utils.tryParseToInt(txtId.getText()));
+		obj.setName(txtName.getText());
+		
+		return obj;
+	}
+>>>>>>> b9cad0dabfca006212cedecbee3875df8fa08a62
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 		Utils.currentStage(event).close();
