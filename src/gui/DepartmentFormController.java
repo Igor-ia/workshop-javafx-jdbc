@@ -1,15 +1,16 @@
 package gui;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DbException;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gui.listeners.DataChangeListener;
 =======
 >>>>>>> b9cad0dabfca006212cedecbee3875df8fa08a62
+=======
+>>>>>>> parent of 19099cf... Observer design pattern to update tableview
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -23,10 +24,11 @@ import javafx.scene.control.TextField;
 import model.entities.Department;
 import model.services.DepartmentService;
 
-public class DepartmentFormController implements Initializable {
+public class DepartmentFormController implements Initializable{
 
 	private Department entity;
 	private DepartmentService service;
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
@@ -34,36 +36,37 @@ public class DepartmentFormController implements Initializable {
 =======
 	
 >>>>>>> b9cad0dabfca006212cedecbee3875df8fa08a62
+=======
+	
+>>>>>>> parent of 19099cf... Observer design pattern to update tableview
 	@FXML
 	private TextField txtId;
 	@FXML
 	private TextField txtName;
-
+	
 	@FXML
 	private Label labelErrorName;
-
+	
 	@FXML
 	private Button btSave;
-
+	
 	@FXML
 	private Button btCancel;
-
-	public void setDepartment(Department entity) {
+	
+	public void setDepartment (Department entity) {
 		this.entity = entity;
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 19099cf... Observer design pattern to update tableview
 	public void setDepartmentService(DepartmentService service) {
 		this.service = service;
 	}
-
-	public void subscribeDataChangeListener(DataChangeListener listener) {
-		dataChangeListeners.add(listener);
-	}
-
-	public void onBtSaveAction(ActionEvent event) {
-		// Programação defensiva, caso o programador esqueça de injetar as dependecias
-		// na classe
+	
+	public void onBtSaveAction(ActionEvent event){
+		//Programação defensiva, caso o programador esqueça de injetar as dependecias na classe
 		if (entity == null) {
 			throw new IllegalStateException("Entity was null");
 		}
@@ -71,33 +74,26 @@ public class DepartmentFormController implements Initializable {
 			throw new IllegalStateException("Service was null");
 		}
 		try {
-			entity = getFormData();
-			service.saveOrUpdate(entity);
-			notifyDataChangeListeners();
-
-			// após concluir irá fechar a janela
-			Utils.currentStage(event).close();
-
-		} catch (DbException e) {
+		entity = getFormData();
+		service.saveOrUpdate(entity);
+		
+		//após concluir irá fechar a janela
+		Utils.currentStage(event).close();
+		
+		}catch (DbException e) {
 			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
 		}
 	}
-
-	private void notifyDataChangeListeners() {
-		for (DataChangeListener listener : dataChangeListeners) {
-			listener.onDataChanged();
-		}
-
-	}
-
+	
 	private Department getFormData() {
 		Department obj = new Department();
-
+		
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
 		obj.setName(txtName.getText());
-
+		
 		return obj;
 	}
+<<<<<<< HEAD
 
 =======
 	public void setDepartmentService(DepartmentService service) {
@@ -133,22 +129,24 @@ public class DepartmentFormController implements Initializable {
 		return obj;
 	}
 >>>>>>> b9cad0dabfca006212cedecbee3875df8fa08a62
+=======
+>>>>>>> parent of 19099cf... Observer design pattern to update tableview
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 		Utils.currentStage(event).close();
 	}
-
+	
+	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		initializeNodes();
-
+		
 	}
-
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(txtId);
 		Constraints.setTextFieldMaxLength(txtName, 30);
 	}
-
+	
 	public void updateFormData() {
 		if (entity == null) {
 			throw new IllegalStateException("Entity was null");
