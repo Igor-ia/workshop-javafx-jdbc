@@ -47,6 +47,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
 
 	@FXML
 	private TableColumn<Department, Department> tableColumnREMOVE;
+	
 
 	@FXML
 	private Button btNew;
@@ -144,7 +145,8 @@ public class DepartmentListController implements Initializable, DataChangeListen
 				}
 				setGraphic(button);
 				button.setOnAction(
-						event -> createDialogForm(obj, "/gui/DepartmentForm.fxml", Utils.currentStage(event)));
+						event -> createDialogForm(
+								obj, "/gui/DepartmentForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
