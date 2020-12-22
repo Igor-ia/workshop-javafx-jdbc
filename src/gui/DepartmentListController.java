@@ -3,9 +3,11 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.Main;
+import db.DbIntegrityException;
 import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
@@ -19,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -47,7 +50,6 @@ public class DepartmentListController implements Initializable, DataChangeListen
 
 	@FXML
 	private TableColumn<Department, Department> tableColumnREMOVE;
-	
 
 	@FXML
 	private Button btNew;
@@ -71,16 +73,17 @@ public class DepartmentListController implements Initializable, DataChangeListen
 	}
 
 	private void initializeNodes() {
-		//Comportamento das colunas
+		// Comportamento das colunas
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-		//macete:table se redimenciona de acordo com a altura janela
+		// macete:table se redimenciona de acordo com a altura janela
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}
 
-	//metodo responsavel por acessar o serviço e carregar os departamentos e enviar para a observablelist
+	// metodo responsavel por acessar o serviço e carregar os departamentos e enviar
+	// para a observablelist
 	public void updateTableView() {
 		if (service == null) {
 			throw new IllegalStateException("Service was null");
@@ -89,10 +92,11 @@ public class DepartmentListController implements Initializable, DataChangeListen
 		obsList = FXCollections.observableArrayList(list);
 		tableViewDepartment.setItems(obsList);
 		initEditButtons();
-		
+		initRemoveButtons();
+
 	}
 
-	//função que carrega janela de formulario para preeencher um novo departamento
+	// função que carrega janela de formulario para preeencher um novo departamento
 	private void createDialogForm(Department obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
@@ -104,20 +108,21 @@ public class DepartmentListController implements Initializable, DataChangeListen
 			controller.subscribeDataChangeListener(this);
 			controller.updateFormData();
 
-			//instanciando o dialog
+			// instanciando o dialog
 			Stage dialogStage = new Stage();
 
-			//configurar o titulo dialog
+			// configurar o titulo dialog
 			dialogStage.setTitle("Enter Department data");
 			dialogStage.setScene(new Scene(pane));
-			
-			//setResizable:diz se a janela pode ou nao ser redemensionada
+
+			// setResizable:diz se a janela pode ou nao ser redemensionada
 			dialogStage.setResizable(false);
-			
-			//initOwner:diz quem é o pai da janela
+
+			// initOwner:diz quem é o pai da janela
 			dialogStage.initOwner(parentStage);
-			
-			//initModality: vai dizer se a janela vai ser modal, WINDOW_MODAL->trava a janela, não podendo acessar a janela anterior
+
+			// initModality: vai dizer se a janela vai ser modal, WINDOW_MODAL->trava a
+			// janela, não podendo acessar a janela anterior
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
@@ -145,13 +150,48 @@ public class DepartmentListController implements Initializable, DataChangeListen
 				}
 				setGraphic(button);
 				button.setOnAction(
-						event -> createDialogForm(
-								obj, "/gui/DepartmentForm.fxml", Utils.currentStage(event)));
+						event -> createDialogForm(obj, "/gui/DepartmentForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
 
-	
+	private void initRemoveButtons() {
+		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumnREMOVE.setCellFactory(param -> new TableCell<Department, Department>() {
+			private final Button button = new Button("remove");
 
-	
+			@Override
+			protected void updateItem(Department obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(event -> removeEntity(obj));
+			}
+		});
+	}
+
+	private void removeEntity(Department obj) {
+		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure too delete?");
+		//Optional carrega objeto dentro dele, e utiliza-se o get para pegar esse objeto
+		//Se o usuario clicar em ok, esta confirmando a deleção
+		if (result.get() == ButtonType.OK) {
+			if (service == null) {
+				throw new IllegalStateException("Service was null");
+			}
+			try {
+				service.remove(obj);
+				
+				//força a atualização dos dados da tabela
+				updateTableView();
+				
+			} catch (DbIntegrityException e) {
+				Alerts.showAlert("Error removing object", null, e.getMessage(), AlertType.ERROR);
+			}
+			
+		}
+	}
+
 }
